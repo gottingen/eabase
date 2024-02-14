@@ -951,3 +951,18 @@ void print_task(std::ostream& os, fiber_t tid) {
 }
 
 }  // namespace eabase
+
+extern "C" {
+
+void fiber_start_span(void *span) {
+    eabase::tls_bls.rpcz_parent_span = span;
+}
+
+void *fiber_get_span() {
+    return eabase::tls_bls.rpcz_parent_span;
+}
+
+void fiber_end_span() {
+    eabase::tls_bls.rpcz_parent_span = NULL;
+}
+}

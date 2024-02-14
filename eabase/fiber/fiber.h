@@ -343,6 +343,12 @@ extern int is_running_on_pthread();
 
 extern int is_running_on_fiber_pthread();
 
+extern void fiber_start_span(void *span);
+
+extern void *fiber_get_span();
+
+extern void fiber_end_span();
+
 __END_DECLS
 
 #endif  // FIBER_FIBER_H_
