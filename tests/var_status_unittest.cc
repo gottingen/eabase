@@ -39,7 +39,7 @@ protected:
 };
 
 TEST_F(StatusTest, status) {
-    eabase::Status<std::string> st1;
+    eabase::StatusVar<std::string> st1;
     st1.set_value("hello %d", 9);
 #ifdef BAIDU_INTERNAL
     boost::any v1;
@@ -55,7 +55,7 @@ TEST_F(StatusTest, status) {
     ASSERT_EQ("var1", vars[0]);
     ASSERT_EQ(1UL, eabase::Variable::count_exposed());
 
-    eabase::Status<std::string> st2;
+    eabase::StatusVar<std::string> st2;
     st2.set_value("world %d", 10);
     ASSERT_EQ(-1, st2.expose("var1"));
     ASSERT_EQ(1UL, eabase::Variable::count_exposed());
@@ -95,7 +95,7 @@ TEST_F(StatusTest, status) {
     ASSERT_EQ("var2_again", vars[1]);
     ASSERT_EQ(2UL, eabase::Variable::count_exposed());
 
-    eabase::Status<std::string> st3("var3", "foobar");
+    eabase::StatusVar<std::string> st3("var3", "foobar");
     ASSERT_EQ("var3", st3.name());
     ASSERT_EQ(3UL, eabase::Variable::count_exposed());
     ASSERT_EQ("foobar", eabase::Variable::describe_exposed("var3"));
@@ -106,7 +106,7 @@ TEST_F(StatusTest, status) {
     ASSERT_EQ("var2_again", vars[2]);
     ASSERT_EQ(3UL, eabase::Variable::count_exposed());
 
-    eabase::Status<int> st4("var4", 9);
+    eabase::StatusVar<int> st4("var4", 9);
     ASSERT_EQ("var4", st4.name());
     ASSERT_EQ(4UL, eabase::Variable::count_exposed());
 #ifdef BAIDU_INTERNAL
@@ -122,7 +122,7 @@ TEST_F(StatusTest, status) {
     ASSERT_EQ("var4", vars[2]);
     ASSERT_EQ("var2_again", vars[3]);
 
-    eabase::Status<void*> st5((void*)19UL);
+    eabase::StatusVar<void*> st5((void*)19UL);
     LOG(INFO) << st5;
 #ifdef BAIDU_INTERNAL
     boost::any v5;
@@ -194,7 +194,7 @@ std::ostream& operator<<(std::ostream& os, const Foo& f) {
 }
 
 TEST_F(StatusTest, non_primitive) {
-    eabase::Status<Foo> st;
+    eabase::StatusVar<Foo> st;
     ASSERT_EQ(0, st.get_value().x);
     st.set_value(Foo(1));
     ASSERT_EQ(1, st.get_value().x);

@@ -19,7 +19,7 @@
 
 #include "eabase/var/reducer.h"
 #include "eabase/var/recorder.h"
-#include "eabase/var/status.h"
+#include "eabase/var/status_var.h"
 #include "eabase/var/passive_status.h"
 #include "eabase/var/latency_recorder.h"
 #include "eabase/var/gflag.h"

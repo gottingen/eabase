@@ -38,19 +38,19 @@ namespace eabase {
 //   
 //   eabase::Status<int> foo_count3("my_value", 17);
 template <typename T, typename Enabler = void>
-class Status : public Variable {
+class StatusVar : public Variable {
 public:
-    Status() {}
-    Status(const T& value) : _value(value) {}
-    Status(const eabase::StringPiece& name, const T& value) : _value(value) {
+    StatusVar() {}
+    StatusVar(const T& value) : _value(value) {}
+    StatusVar(const eabase::StringPiece& name, const T& value) : _value(value) {
         this->expose(name);
     }
-    Status(const eabase::StringPiece& prefix,
+    StatusVar(const eabase::StringPiece& prefix,
            const eabase::StringPiece& name, const T& value) : _value(value) {
         this->expose_as(prefix, name);
     }
     // Calling hide() manually is a MUST required by Variable.
-    ~Status() { hide(); }
+    ~StatusVar() { hide(); }
 
     void describe(std::ostream& os, bool /*quote_string*/) const override {
         os << get_value();
@@ -82,7 +82,7 @@ private:
 };
 
 template <typename T>
-class Status<T, typename eabase::enable_if<detail::is_atomical<T>::value>::type>
+class StatusVar<T, typename eabase::enable_if<detail::is_atomical<T>::value>::type>
     : public Variable {
 public:
     struct PlaceHolderOp {
@@ -92,28 +92,28 @@ public:
     public:
         typedef typename eabase::conditional<
         true, detail::AddTo<T>, PlaceHolderOp>::type Op;
-        explicit SeriesSampler(Status* owner)
+        explicit SeriesSampler(StatusVar* owner)
             : _owner(owner), _series(Op()) {}
         void take_sample() { _series.append(_owner->get_value()); }
         void describe(std::ostream& os) { _series.describe(os, NULL); }
     private:
-        Status* _owner;
+        StatusVar* _owner;
         detail::Series<T, Op> _series;
     };
 
 public:
-    Status() : _series_sampler(NULL) {}
-    Status(const T& value) : _value(value), _series_sampler(NULL) { }
-    Status(const eabase::StringPiece& name, const T& value)
+    StatusVar() : _series_sampler(NULL) {}
+    StatusVar(const T& value) : _value(value), _series_sampler(NULL) { }
+    StatusVar(const eabase::StringPiece& name, const T& value)
         : _value(value), _series_sampler(NULL) {
         this->expose(name);
     }
-    Status(const eabase::StringPiece& prefix,
+    StatusVar(const eabase::StringPiece& prefix,
            const eabase::StringPiece& name, const T& value)
         : _value(value), _series_sampler(NULL) {
         this->expose_as(prefix, name);
     }
-    ~Status() {
+    ~StatusVar() {
         hide();
         if (_series_sampler) {
             _series_sampler->destroy();
@@ -170,10 +170,10 @@ private:
 
 // Specialize for std::string, adding a printf-style set_value().
 template <>
-class Status<std::string, void> : public Variable {
+class StatusVar<std::string, void> : public Variable {
 public:
-    Status() {}
-    Status(const eabase::StringPiece& name, const char* fmt, ...) {
+    StatusVar() {}
+    StatusVar(const eabase::StringPiece& name, const char* fmt, ...) {
         if (fmt) {
             va_list ap;
             va_start(ap, fmt);
@@ -182,7 +182,7 @@ public:
         }
         expose(name);
     }
-    Status(const eabase::StringPiece& prefix,
+    StatusVar(const eabase::StringPiece& prefix,
            const eabase::StringPiece& name, const char* fmt, ...) {
         if (fmt) {
             va_list ap;
@@ -193,7 +193,7 @@ public:
         expose_as(prefix, name);
     }
 
-    ~Status() { hide(); }
+    ~StatusVar() { hide(); }
 
     void describe(std::ostream& os, bool quote_string) const override {
         if (quote_string) {
